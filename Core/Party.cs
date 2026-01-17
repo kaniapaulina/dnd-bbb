@@ -9,8 +9,8 @@ namespace DnD_BBB.Core
 {
     public class Party
     {
-        private string partyName;
-        private List<Character> partyMembers = new List<Character>();
+        string partyName;
+        List<Character> partyMembers = new List<Character>();
 
         public Party() { }
         public Party(string nazwa)

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace DnD_BBB
 {
+    public enum StatType { Str, Dex, Intel, Wis, Charm, Cons }
     internal class Program
     {
         static void Main(string[] args)

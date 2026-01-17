@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DnD_BBB.Exceptions
+namespace DnD_BBB.Exceptions_and_Interfaces
 {
     public class InvalidStatValueException : Exception
     {

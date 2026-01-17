@@ -1,5 +1,4 @@
-﻿using DnD_BBB.Exceptions;
-using DnD_BBB.Exceptions_and_Interfaces;
+﻿using DnD_BBB.Exceptions_and_Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 namespace DnD_BBB.Core
 {
-
-    public enum StatType { Str, Dex, Intel, Wis, Charm, Cons}
-
     public abstract class Unit : ILevel, IAction
     {
         private int hp; //Hitpoints

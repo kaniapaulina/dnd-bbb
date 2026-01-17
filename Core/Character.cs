@@ -1,14 +1,13 @@
-﻿using DnD_BBB.Exceptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DnD_BBB.Exceptions_and_Interfaces;
 
 namespace DnD_BBB.Core
 {
-
     public class Character:Unit, IEquatable<Character>, IComparable<Character>
     {
         private string name;
