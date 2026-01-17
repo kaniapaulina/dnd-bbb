@@ -9,6 +9,7 @@ namespace DnD_BBB.Races
 {
     public class Gnome:UnitRace
     {
+        public Gnome() : base() { }
         public override string RaceName => "Gnome";
         public override void ApplyBonus(Unit unit)
         {

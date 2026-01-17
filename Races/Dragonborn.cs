@@ -9,6 +9,7 @@ namespace DnD_BBB.Races
 {
     public class Dragonborn:UnitRace
     {
+        public Dragonborn() : base() { }
         public override string RaceName => "Dragonborn";
         public override void ApplyBonus(Unit unit)
         {

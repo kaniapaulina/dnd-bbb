@@ -1,15 +1,18 @@
-﻿using System;
+﻿using DnD_BBB.Exceptions;
+using DnD_BBB.Exceptions_and_Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using DnD_BBB.Exceptions;
 namespace DnD_BBB.Core
 {
 
     public enum StatType { Str, Dex, Intel, Wis, Charm, Cons}
 
-    public abstract class Unit
+    public abstract class Unit : ILevel, IAction
     {
         private int hp; //Hitpoints
         private int ac; //Armor Class
@@ -21,8 +24,8 @@ namespace DnD_BBB.Core
         private int intel; //Intelligence
         private int charm; //Charm
 
-        private UnitRace unitrace;
-        private UnitClass unitclass;
+        //private UnitRace unitrace;
+        //private UnitClass unitclass;
 
         /// <summary>
         /// Full Properties for each base stat, throwing InvalidStatValueException if stat reaches impossible value
@@ -118,6 +121,33 @@ namespace DnD_BBB.Core
         public UnitRace UnitRace { get; set; }
         public UnitClass UnitClass { get; set; }
 
+        public int ProficiencyBonus
+        {
+            get
+            {
+                if (Level < 5) return 2;
+                if (Level < 9) return 3;
+                if (Level < 13) return 4;
+                if (Level < 17) return 5;
+                return 6;
+            }
+        }
+
+        //public int Level => throw new NotImplementedException();
+        public int Level
+        {
+            get;
+            protected set;
+            //{
+                //if (value < 0 || value > 20)
+                //{
+                //    throw new Exception("Impossible level achieved (how??");
+                //}
+            //}
+        }
+
+        public bool LifeStatus => (Hp <= 0); //gdy hp mniejsze lub rowne zero
+
         protected Unit()
         {
             this.hp = 0;
@@ -129,6 +159,43 @@ namespace DnD_BBB.Core
             this.wis = 0;
             this.intel = 0;
             this.charm = 0;
+
+            Level = 1;
+        }
+
+        public void LevelUp()
+        {
+            //throw new NotImplementedException();
+            Random rand = new Random();
+            int maxroll = UnitClass.HitDie;
+            int roll = rand.Next(1, maxroll + 1);
+
+            int hpGain = roll + UnitClass.Calc(Cons);
+            Hp += hpGain;
+            Level++;
+        }
+        public void TakeDamage(int damage)
+        {
+
+            if (LifeStatus) return;
+            Hp -= damage;
+            //throw new NotImplementedException();
+            if (Hp <= 0)
+            {
+                Hp = 0;
+                DeathScreen(damage);
+            }
+        }
+        protected virtual void DeathScreen(int damage)
+        {
+            Console.Write("this unit has died in an epic battle\n");
+        }
+
+        public void HealDamage(int heal)
+        {
+            //throw new NotImplementedException();
+            if(LifeStatus) return;
+            Hp += heal;
         }
     }
 }

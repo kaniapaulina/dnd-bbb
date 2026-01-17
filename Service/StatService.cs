@@ -1,10 +1,11 @@
-﻿using System;
+﻿using DnD_BBB.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DnD_BBB.Core
+namespace DnD_BBB.Service
 {
     public class StatService
     {

@@ -9,6 +9,7 @@ namespace DnD_BBB.Races
 {
     public class Human:UnitRace
     {
+        public Human() : base() { }
         public override string RaceName => "Human";
         public override void ApplyBonus(Unit unit)  
         {

@@ -9,6 +9,7 @@ namespace DnD_BBB.Races
 {
     public class Elf:UnitRace
     {
+        public Elf() : base() { }
         public override string RaceName => "Elf";
         public override void ApplyBonus(Unit unit)
         {

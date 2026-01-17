@@ -11,6 +11,7 @@ namespace DnD_BBB.Races
 {
     public class Tiefling:UnitRace
     {
+        public Tiefling() : base() { }
         public override string RaceName => "Tiefling";
         public override void ApplyBonus(Unit unit)
         { 
