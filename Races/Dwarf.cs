@@ -13,6 +13,7 @@ namespace DnD_BBB.Races
         public override string RaceName => "Dwarf";
         public override void ApplyBonus(Unit unit)
         {
+            unit.Hp += 1;
         }
     }
 }
