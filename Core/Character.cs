@@ -18,7 +18,7 @@ namespace DnD_BBB.Core
         {
             get
             {
-                return 2 + Level;
+                return 3 + Level;
             }
         }
         public List<string> Spells { get; set; } = new List<string>();
@@ -91,14 +91,11 @@ namespace DnD_BBB.Core
             Proficiencies.Add(p3);
         }
 
-        public int RollProficiency(string p)
+        public int RollProficiency()
         {
-            if(!Proficiencies.Contains(p))
-            {
-                throw new Exception("You dont have that Proficiency");
-            }
+     
             Random rand = new Random();
-            int roll = rand.Next(1,21) + ProficiencyBonus;
+            int roll = rand.Next(1,20);
             return roll;
         }
 
@@ -147,14 +144,15 @@ namespace DnD_BBB.Core
 
         public bool Equals(Character? other)
         {
-            //throw new NotImplementedException();
-            return Equals(this, other);
+            if (ReferenceEquals(this, other)) return true;
+            if (other is null) return false;
+            return string.Equals(this.Name, other.Name, StringComparison.OrdinalIgnoreCase);
         }
 
         public int CompareTo(Character? other)
         {
-            //throw new NotImplementedException();
-            return this.CompareTo(other);
+            if (other is null) return 1; 
+            return string.Compare(this.Name, other.Name, StringComparison.OrdinalIgnoreCase);
         }
 
 
