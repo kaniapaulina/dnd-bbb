@@ -1,9 +1,3 @@
-<style>
-p { color: Pink }
-g { color: Green }
-v { color: Violet }
-</style>
-
 # Dnd-BBB
 Nasza aplikacja WPF została stworzona do zarządzania postaciami i drużynami w DnD - popularnym na całym świecie systemie RPG. Interfejs użytkownika znajduje się w projekcie `DndGUI`, logika domenowa i dostęp do danych w projekcie `Dnd_BBB`.
 
@@ -38,8 +32,8 @@ Nasza aplikacja WPF została stworzona do zarządzania postaciami i drużynami w
 - HandyControl wymaga zasobów tematów — jeśli GUI wygląda nieprawidłowo, upewnij się, że odpowiadające style/zasoby są załadowane (sprawdź `App.xaml` i referencje do HandyControl).
 
 ## Autorki
-- <p>Paulina Kania</p> - kaniapaulina@student.agh.edu.pl
-- <g>Natalia Kruk</g> - nkruk@student.agh.edu.pl
-- <v>Wiktoria Kowalska</v> - kowalska@student.agh.edu.pl
+- Paulina Kania- kaniapaulina@student.agh.edu.pl
+- Natalia Kruk - nkruk@student.agh.edu.pl
+- Wiktoria Kowalska - kowalska@student.agh.edu.pl
 
 
