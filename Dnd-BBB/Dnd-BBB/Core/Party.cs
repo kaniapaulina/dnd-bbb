@@ -27,18 +27,27 @@ namespace Dnd_BBB.Core
 
         public void SaveToDb(Party party)
         {
-            using (var db = new PartyDbContext())
+            try
             {
-                foreach (var c in party.PartyMembers)
+                using (var db = new PartyDbContext())
                 {
-                    c.SpellsJson = JsonSerializer.Serialize(c.Spells ?? new List<string>());
-                    c.ProficienciesJson = JsonSerializer.Serialize(c.Proficiencies ?? new List<string>());
-                    c.EquipmentJson = JsonSerializer.Serialize(c.Equipment ?? new List<string>());
-                    c.Party = party;
+                    foreach (var c in party.PartyMembers)
+                    {
+                        c.SpellsJson = JsonSerializer.Serialize(c.Spells ?? new List<string>());
+                        c.ProficienciesJson = JsonSerializer.Serialize(c.Proficiencies ?? new List<string>());
+                        c.EquipmentJson = JsonSerializer.Serialize(c.Equipment ?? new List<string>());
+                        c.Party = party;
+                    }
+                    db.Parties.Add(party);
+                    db.SaveChanges();
                 }
-                db.Parties.Add(party);
-                db.SaveChanges();
             }
+            catch (Exception ex)
+            {
+                Console.Write($"Błąd Bazy Danych: {ex.Message}\n\nPróba zapisu awaryjnego do JSON...", "Błąd Krytyczny");
+                StorageService.SavePartyJSON($"{party.PartyName}_backup.json", party);
+            }
+
         }
 
         public static List<Party> ReadFromDb()
@@ -157,6 +166,13 @@ namespace Dnd_BBB.Core
         public void SortByStr() => PartyMembers.Sort(new StrComparer());
         public void SortByDext() => PartyMembers.Sort(new DextComparer());
 
+        public List<Character> GetStrongestMembers()
+        {
+            return PartyMembers
+                .Where(m => m.Str > 15)
+                .OrderByDescending(m => m.Hp)
+                .ToList();
+        }
 
         public override string ToString()
         {

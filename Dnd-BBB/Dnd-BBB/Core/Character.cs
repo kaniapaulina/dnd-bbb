@@ -210,5 +210,16 @@ namespace Dnd_BBB.Core
         {
             return this.MemberwiseClone();
         }
+
+        // DELEGAT ??
+        public delegate void LevelUpHandler(string message, int currentLevel);
+        public event LevelUpHandler OnLevelUp;
+
+        public override void LevelUp()
+        {
+            base.LevelUp();
+            OnLevelUp?.Invoke($"Hura! {this.Name} osiągnął poziom {this.Level}!", this.Level);
+        }
+
     }
 }

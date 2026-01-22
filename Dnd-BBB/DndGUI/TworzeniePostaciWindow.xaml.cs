@@ -95,6 +95,10 @@ namespace DndGUI
         {
             if (rollClicked) return; // dodatkowe zabezpieczenie
 
+            DiceRollWindow animationWindow = new DiceRollWindow();
+            animationWindow.Owner = this;
+            animationWindow.ShowDialog();
+
             character.UnitClass = GetClass(txtKlasaPostaci.Text);
             character.UnitRace = GetRace(txtRasaPostaci.Text);
 

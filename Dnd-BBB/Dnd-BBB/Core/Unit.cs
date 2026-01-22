@@ -185,7 +185,7 @@ namespace Dnd_BBB.Core
             Level = 1;
         }
 
-        public void LevelUp()
+        public virtual void LevelUp()
         {
             Random rand = new Random();
             int maxroll = UnitClass.HitDie;
