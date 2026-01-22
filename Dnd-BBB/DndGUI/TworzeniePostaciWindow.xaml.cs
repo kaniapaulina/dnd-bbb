@@ -1,18 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using HandyControl;
-using Dnd_BBB;
+using System.Threading.Tasks;
 using Dnd_BBB.Core;
 using Dnd_BBB.Classes;
 using Dnd_BBB.Races;
@@ -42,7 +33,6 @@ namespace DndGUI
             UpdateSpellControls();
         }
 
-
         private void TxtKlasaPostaci_TextChanged(object? sender, TextChangedEventArgs e)
         {
             if (sender is TextBox tb)
@@ -53,26 +43,22 @@ namespace DndGUI
             }
         }
 
-        private UnitClass? CreateUnitClassByName(string name)
+        private UnitClass? CreateUnitClassByName(string name) => name switch
         {
-            return name switch
-            {
-                "Bard" => new Bard(),
-                "Barbarian" => new Barbarian(),
-                "Cleric" => new Cleric(),
-                "Druid" => new Druid(),
-                "Fighter" => new Fighter(),
-                "Monk" => new Monk(),
-                "Paladin" => new Paladin(),
-                "Ranger" => new Ranger(),
-                "Rogue" => new Rogue(),
-                "Sorcerer" => new Sorcerer(),
-                "Warlock" => new Warlock(),
-                "Wizard" => new Wizard(),
-                _ => null
-            };
-        }
-
+            "Bard" => new Bard(),
+            "Barbarian" => new Barbarian(),
+            "Cleric" => new Cleric(),
+            "Druid" => new Druid(),
+            "Fighter" => new Fighter(),
+            "Monk" => new Monk(),
+            "Paladin" => new Paladin(),
+            "Ranger" => new Ranger(),
+            "Rogue" => new Rogue(),
+            "Sorcerer" => new Sorcerer(),
+            "Warlock" => new Warlock(),
+            "Wizard" => new Wizard(),
+            _ => null
+        };
 
         private void UpdateSpellControls()
         {
@@ -82,7 +68,6 @@ namespace DndGUI
             if (this.FindName("txtSpell2") is TextBox s2) s2.IsEnabled = canCast;
             if (this.FindName("txtSpell3") is TextBox s3) s3.IsEnabled = canCast;
             if (this.FindName("txtSpell4") is TextBox s4) s4.IsEnabled = canCast;
-
 
             if (!canCast)
             {
@@ -95,59 +80,23 @@ namespace DndGUI
 
         private void RollButton_Click(object sender, RoutedEventArgs e)
         {
-            if (rollClicked) return; // dodatkowe zabezpieczenie
+            if (rollClicked) return;
             rollClicked = true;
-
-            // wyłącz przycisk (sender powinien być Button)
             if (sender is Button btn) btn.IsEnabled = false;
 
             character.UnitClass = CreateUnitClassByName((this.FindName("txtKlasaPostaci") as TextBox)?.Text?.Trim() ?? string.Empty);
 
             switch ((this.FindName("txtRasaPostaci") as TextBox)?.Text?.Trim())
             {
-                case "Human":
-                    Human human = new Human();
-                    character.UnitRace = human;
-                    break;
-
-                case "Elf":
-                    Elf elf = new Elf();
-                    character.UnitRace = elf;
-                    break;
-
-                case "Dwarf":
-                    Dwarf dwarf = new Dwarf();
-                    character.UnitRace = dwarf;
-                    break;
-
-                case "Halfling":
-                    Halfling halfling = new Halfling();
-                    character.UnitRace = halfling;
-                    break;
-
-                case "Dragonborn":
-                    Dragonborn dragonborn = new Dragonborn();
-                    character.UnitRace = dragonborn;
-                    break;
-
-                case "Gnome":
-                    Gnome gnome = new Gnome();
-                    character.UnitRace = gnome;
-                    break;
-
-                case "Half-Orc":
-                    Half_Orc halfOrc = new Half_Orc();
-                    character.UnitRace = halfOrc;
-                    break;
-
-                case "Half-Elf":
-                    Half_Elf halfElf = new Half_Elf();
-                    character.UnitRace = halfElf;
-                    break;
-
-                default:
-                    MessageBox.Show("Nieznana rasa postaci!");
-                    break;
+                case "Human": character.UnitRace = new Human(); break;
+                case "Elf": character.UnitRace = new Elf(); break;
+                case "Dwarf": character.UnitRace = new Dwarf(); break;
+                case "Halfling": character.UnitRace = new Halfling(); break;
+                case "Dragonborn": character.UnitRace = new Dragonborn(); break;
+                case "Gnome": character.UnitRace = new Gnome(); break;
+                case "Half-Orc": character.UnitRace = new Half_Orc(); break;
+                case "Half-Elf": character.UnitRace = new Half_Elf(); break;
+                default: MessageBox.Show("Nieznana rasa postaci!"); break;
             }
 
             if (character.UnitClass != null && character.UnitRace != null)
@@ -161,9 +110,7 @@ namespace DndGUI
                 losChar.Text = character.Charm.ToString();
                 losConst.Text = character.Cons.ToString();
 
-
                 UpdateSpellControls();
-
             }
             else
             {
@@ -174,16 +121,12 @@ namespace DndGUI
                 losChar.Text = "0";
                 losConst.Text = "0";
             }
-
         }
-
-        private void ZapiszButton_Click(Object sender, RoutedEventArgs e)
+        //poczeka tu i zapisze postać w bazie
+        private async void ZapiszButton_Click(Object sender, RoutedEventArgs e)
         {
-
             character.Name = txtNazwaPostaci.Text?.Trim() ?? character.Name;
-
             character.AddProficiencies(txtUmiejetnosc1.Text, txtUmiejetnosc2.Text, txtUmiejetnosc3.Text);
-
 
             try
             {
@@ -220,32 +163,18 @@ namespace DndGUI
             if (int.TryParse(losChar.Text, out var charValue)) character.Charm = charValue;
             if (int.TryParse(losConst.Text, out var conValue)) character.Cons = conValue;
 
-            // Dodajemy postać do cache aplikacji (Application.Current.Properties)
-            if (Application.Current?.Properties != null)
+            try
             {
-                if (!Application.Current.Properties.Contains("Characters"))
-                {
-                    Application.Current.Properties["Characters"] = new List<Character>();
-                }
+                // Przekazujemy zapis do backendu 
+                BackgroundDbQueue.Instance.EnqueueSaveCharacterAsync(character);
 
-                if (Application.Current.Properties["Characters"] is List<Character> list)
-                {
-                    // unikamy duplikatów po nazwie
-                    if (!list.Any(ch => ch.Name == character.Name))
-                    {
-                        list.Add(character);
-                    }
-
-                    // Odśwież wszystkie otwarte okna EdycjaPostaciWindow
-                    var openEditors = Application.Current.Windows.OfType<EdycjaPostaciWindow>().ToList();
-                    foreach (var w in openEditors)
-                    {
-                        w.RefreshCharacters(list);
-                    }
-                }
+                MessageBox.Show("Żądanie zapisu wysłane. Okno zostanie zamknięte.", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
+                this.Close();
             }
-
-            this.Close();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd podczas wysyłania żądania zapisu: {ex.Message}", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

@@ -49,6 +49,15 @@ namespace DndGUI
         {
             try
             {
+                // preferuj dane z bazy jeśli możliwe
+                var fromDb = PartyRepository.GetAllParties();
+                if (fromDb != null && fromDb.Any())
+                {
+                    cachedParties = new ObservableCollection<Party>(fromDb);
+                    Application.Current.Properties["Parties"] = cachedParties;
+                    return;
+                }
+
                 if (Application.Current?.Properties != null && Application.Current.Properties.Contains("Parties"))
                 {
                     // preferuj ObservableCollection jeśli jest
@@ -87,6 +96,15 @@ namespace DndGUI
         {
             try
             {
+                // preferuj pobranie z bazy
+                var fromDb = PartyRepository.GetAllCharacters();
+                if (fromDb != null && fromDb.Any())
+                {
+                    cachedCharacters = fromDb;
+                    Application.Current.Properties["Characters"] = cachedCharacters;
+                    return;
+                }
+
                 if (Application.Current?.Properties != null && Application.Current.Properties.Contains("Characters"))
                 {
                     if (Application.Current.Properties["Characters"] is List<Character> chars)
@@ -270,6 +288,7 @@ namespace DndGUI
 
                     if (Application.Current.Properties["Parties"] is List<Party> list)
                     {
+                        // update local list (niekoniecznie DB)
                         var selectedInCombo = comboBoxParties.SelectedItem as Party;
                         int idx = -1;
                         if (selectedInCombo != null)
@@ -286,17 +305,34 @@ namespace DndGUI
                     }
                 }
 
+                // zamiast bezpośredniego zapisu do DB — enqueue do background worker
+                BackgroundDbQueue.Instance.EnqueueSavePartyAsync(currentParty);
 
+                // natychmiast zaktualizuj cache aplikacji (optymistycznie)
+                if (Application.Current?.Properties != null)
+                {
+                    if (Application.Current.Properties["Parties"] is ObservableCollection<Party> oc)
+                    {
+                        var idx = oc.ToList().FindIndex(p => p.PartyName == currentParty.PartyName);
+                        if (idx >= 0) oc[idx] = currentParty;
+                        else oc.Add(currentParty);
+                    }
+                    else
+                    {
+                        Application.Current.Properties["Parties"] = new ObservableCollection<Party>(new[] { currentParty });
+                    }
+                }
+
+                // zapis JSON (stary zachowany)
                 var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DnDPartyExports");
                 Directory.CreateDirectory(folder);
                 var file = Path.Combine(folder, $"{SanitizeFileName(currentParty.PartyName ?? "Party")}.json");
                 StorageService.SavePartyJSON(file, currentParty);
 
-
                 LoadCachedParties();
                 RefreshPartiesCombo();
 
-                MessageBox.Show("Zapisano zmiany drużyny do JSON.", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Żądanie zapisu drużyny wysłane (zapis w tle).", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
