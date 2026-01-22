@@ -94,6 +94,9 @@ namespace DndGUI
             {
                 for (int i = 0; i < times; i++)
                 {
+                    SelectedCharacter.OnLevelUp += (msg, lvl) => {
+                        MessageBox.Show(msg, "Nowy Poziom!", MessageBoxButton.OK, MessageBoxImage.Information);
+                    };
                     SelectedCharacter.LevelUp();
                 }
 
