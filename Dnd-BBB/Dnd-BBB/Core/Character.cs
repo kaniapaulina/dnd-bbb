@@ -202,10 +202,16 @@ namespace Dnd_BBB.Core
             return Equals(this, other);
         }
 
+        //to idzie najpierw po imieniu potem Hp ale imie should be the same
         public int CompareTo(Character? other)
         {
-            //throw new NotImplementedException();
-            return this.CompareTo(other);
+            if (ReferenceEquals(this, other)) return 0;
+            if (other is null) return 1;
+
+            int nameComparison = string.Compare(this.Name ?? string.Empty, other.Name ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+            if (nameComparison != 0) return nameComparison;
+
+            return this.Hp.CompareTo(other.Hp);
         }
 
 
