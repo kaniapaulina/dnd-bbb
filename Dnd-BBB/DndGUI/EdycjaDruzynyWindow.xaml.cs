@@ -37,6 +37,11 @@ namespace DndGUI
             BindUi();
 
             this.Activated += EdycjaDruzynyWindow_Activated;
+            var parties = Party.ReadFromDb();
+            var characters = Party.ReadAllCharactersFromDb();
+
+            Application.Current.Properties["Parties"] = new System.Collections.ObjectModel.ObservableCollection<Party>(parties);
+            Application.Current.Properties["Characters"] = characters;
         }
 
         private void EdycjaDruzynyWindow_Activated(object? sender, EventArgs e)
@@ -261,6 +266,7 @@ namespace DndGUI
 
             try
             {
+                currentParty.SaveToDb(currentParty);
                 if (Application.Current?.Properties != null)
                 {
                     if (!Application.Current.Properties.Contains("Parties"))

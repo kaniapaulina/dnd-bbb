@@ -1,4 +1,6 @@
-﻿using Dnd_BBB.Exceptions;
+﻿using Dnd_BBB.Classes;
+using Dnd_BBB.Exceptions;
+using Dnd_BBB.Races;
 using Dnd_BBB.Service;
 using System;
 using System.Collections.Generic;
@@ -32,6 +34,70 @@ namespace Dnd_BBB.Core
                 db.Parties.Add(party);
                 db.SaveChanges();
             }
+        }
+
+        public static List<Party> ReadFromDb()
+        {
+            using (var db = new PartyDbContext())
+            {
+                var parties = db.Parties.Include("PartyMembers").ToList();
+
+                foreach (var p in parties)
+                {
+                    foreach (var c in p.PartyMembers)
+                    {
+                        // REKONSTRUKCJA KLASY I RASY :((
+                        c.UnitClass = ResolveClass(c.UnitClassName);
+                        c.UnitRace = ResolveRace(c.UnitRaceName);
+
+                        _ = c.Spells;
+                        _ = c.Proficiencies;
+                        _ = c.Equipment;
+                    }
+                }
+                return parties;
+            }
+        }
+
+        private static UnitClass ResolveClass(string name) => name switch
+        {
+            "Bard" => new Bard(),
+            "Wizard" => new Wizard(),
+            "Fighter" => new Fighter(),
+            "Barbarian" => new Barbarian(),
+            "Cleric" => new Cleric(),
+            "Druid" => new Druid(),
+            "Monk" => new Monk(),
+            "Paladin" => new Paladin(),
+            "Ranger" => new Ranger(),
+            "Rogue" => new Rogue(),
+            "Sorcerer" => new Sorcerer(),
+            "Warlock" => new Warlock(),
+            _ => null
+        };
+
+        private static UnitRace ResolveRace(string name) => name switch
+        {
+            "Human" => new Human(),
+            "Elf" => new Elf(),
+            "Dwarf" => new Dwarf(),
+            "Dragonborn" => new Dragonborn(),
+            "Gnome" => new Gnome(),
+            "Halfling" => new Halfling(),
+            "Half-Orc" => new Half_Orc(),
+            "Half-Elf" => new Half_Elf(),
+            "Tiefling" => new Tiefling(),
+            _ => null
+        };
+
+        public static List<Character> ReadAllCharactersFromDb()
+        {
+            var parties = ReadFromDb();
+            return parties
+                .SelectMany(p => p.PartyMembers ?? Enumerable.Empty<Character>())
+                .GroupBy(c => c.CharacterId)
+                .Select(g => g.First())
+                .ToList();
         }
 
         #endregion EF

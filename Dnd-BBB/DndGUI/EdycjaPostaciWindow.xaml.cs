@@ -430,6 +430,14 @@ namespace DndGUI
             else if (ctrl is Label lbl) lbl.Content = value.ToString();
         }
 
+        private void UpdateModifiers(Character c)
+        {
+            txtDextBonus.Text = FormatModifier(c.UnitClass.Calc(c.Dext)); 
+            txtConsBonus.Text = FormatModifier(c.UnitClass.Calc(c.Cons));
+        }
+
+        private string FormatModifier(int mod) => mod >= 0 ? $"+{mod}" : mod.ToString();
+
         private void SetBonusTextBox(string controlName, int modifier)
         {
             var ctrl = this.FindName(controlName) as TextBox;

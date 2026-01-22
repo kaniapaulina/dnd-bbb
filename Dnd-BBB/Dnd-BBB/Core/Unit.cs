@@ -161,7 +161,7 @@ namespace Dnd_BBB.Core
         public int Level
         {
             get;
-            protected set;
+            set;
             //{
                 //if (value < 0 || value > 20)
                 //{

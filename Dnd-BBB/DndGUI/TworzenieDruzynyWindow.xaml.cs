@@ -159,6 +159,7 @@ namespace DndGUI
                         Application.Current.Properties["Parties"] = new ObservableCollection<Party> { party };
                     }
                 }
+                party.SaveToDb(party);
 
                 MessageBox.Show("Zapisano drużynę.", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
 
