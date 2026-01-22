@@ -10,18 +10,15 @@ using System.Threading.Tasks;
 
 namespace Dnd_BBB.Service
 {
+    /// <summary>
+    /// Klasa narzędziowa do obsługi trwałości danych. 
+    /// Odpowiada za serializację i deserializację obiektu Party i Character
+    /// do formatu JSON, wspierając polimorfizm klas i ras.
+    /// </summary>
     public class StorageService
     {
         public static void SavePartyJSON(string nazwa, Party p)
         {
-            /*
-            DataContractJsonSerializer jser =
-                new DataContractJsonSerializer(typeof(Party));
-            using (var fstream = File.Create(nazwa))
-            {
-                jser.WriteObject(fstream, p);
-            }
-            */
             var options = new JsonSerializerOptions { WriteIndented = true };
             string jsonString = JsonSerializer.Serialize(p, options);
             File.WriteAllText(nazwa, jsonString);
@@ -29,26 +26,6 @@ namespace Dnd_BBB.Service
 
         public static Party ReadPartyJSON(string nazwa)
         {
-            /*
-            Party odczytany = new Party();
-            try
-            {
-                FileStream fs = new FileStream(nazwa, FileMode.Open);
-                DataContractJsonSerializer jsonSr =
-                    new DataContractJsonSerializer(typeof(Party));
-                fs.Position = 0;
-                odczytany = (Party)jsonSr.ReadObject(fs);
-                fs.Close();
-                return odczytany;
-
-            }
-            catch (FileNotFoundException)
-            {
-                Console.WriteLine("Nie znaleziono pliku!");
-            }
-            return odczytany;
-            */
-
             if (!File.Exists(nazwa)) return null;
             string jsonString = File.ReadAllText(nazwa);
             var options = new JsonSerializerOptions
@@ -58,5 +35,20 @@ namespace Dnd_BBB.Service
             };
             return JsonSerializer.Deserialize<Party>(jsonString);
         }
+
+        public static void SaveAllCharacters(List<Character> characters)
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string json = JsonSerializer.Serialize(characters, options);
+            File.WriteAllText("all_characters.json", json);
+        }
+
+        public static List<Character> LoadAllCharacters()
+        {
+            if (!File.Exists("all_characters.json")) return new List<Character>();
+            string json = File.ReadAllText("all_characters.json");
+            return JsonSerializer.Deserialize<List<Character>>(json) ?? new List<Character>();
+        }
+
     }
 }

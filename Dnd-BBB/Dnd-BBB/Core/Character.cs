@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 
 namespace Dnd_BBB.Core
 {
+    /// <summary>
+    /// Reprezentuje konkretnego bohatera gracza. 
+    /// Rozszerza klasę Unit o imię, listę czarów, ekwipunek oraz 
+    /// logikę specyficzną dla rasy i klasy postaci.
+    /// </summary>
     public class Character:Unit, IEquatable<Character>, IComparable<Character>, ICloneable
     {
         #region EF
@@ -21,7 +26,6 @@ namespace Dnd_BBB.Core
 
         private string name;
         private int gold;
-        //private int level;
         
         public int MaxSpellCount
         {
@@ -97,17 +101,6 @@ namespace Dnd_BBB.Core
             }
         }
 
-        /*public int Level { get => level; 
-            set
-            {
-                if(value < 0 || value > 20)
-                {
-                    throw new Exception("Impossible level achieved (how??");
-                }
-                level = value;
-            }
-        }*/
-
         public Character():base() { }
 
         public Character(string name, UnitClass uclass, UnitRace urace):base()
@@ -142,6 +135,11 @@ namespace Dnd_BBB.Core
             ProficienciesJson = JsonSerializer.Serialize(Proficiencies);
         }
 
+        public bool CanLearnMoreSpells()
+        {
+            return UnitClass.Spell && Spells.Count() < (3 + Level);
+        }
+
         public int RollProficiency(string p)
         {
             if(!Proficiencies.Contains(p))
@@ -152,17 +150,6 @@ namespace Dnd_BBB.Core
             int roll = rand.Next(1,21) + ProficiencyBonus;
             return roll;
         }
-
-        /*public virtual void LevelUp()
-        {
-            Random rand = new Random();
-            int maxroll = UnitClass.HitDie;
-            int roll = rand.Next(1, maxroll + 1);
-
-            int hpGain = roll + UnitClass.CalcConstitution(Cons);
-            Hp += hpGain;
-            Level += 1;
-        }*/
 
         public override string ToString()
         {
@@ -198,7 +185,6 @@ namespace Dnd_BBB.Core
 
         public bool Equals(Character? other)
         {
-            //throw new NotImplementedException();
             return Equals(this, other);
         }
 
@@ -223,7 +209,6 @@ namespace Dnd_BBB.Core
         public object Clone()
         {
             return this.MemberwiseClone();
-            //throw new NotImplementedException();
         }
     }
 }

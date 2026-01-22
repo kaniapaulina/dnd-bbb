@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 namespace DndGUI
 {
     /// <summary>
-    /// Logika interakcji dla klasy UpdateStatsWindow.xaml
+    /// Okno szybkiej modyfikacji bieżących statystyk (HP, Złoto, Poziom) wybranej postaci.
     /// </summary>
     public partial class UpdateStatsWindow : Window
     {

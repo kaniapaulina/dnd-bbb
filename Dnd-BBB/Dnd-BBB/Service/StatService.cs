@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace Dnd_BBB.Service
 {
+    /// <summary>
+    /// Statyczny serwis odpowiedzialny za algorytmy generowania statystyk.
+    /// Implementuje mechanikę rzutu 4k6 (drop lowest) oraz 
+    /// inteligentne przypisywanie wyników zgodnie z priorytetami klasy.
+    /// </summary>
     public class StatService
     {
         public void AssignWeightedStats(Unit unit)

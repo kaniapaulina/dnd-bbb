@@ -12,6 +12,11 @@ using System.Threading.Tasks;
 
 namespace Dnd_BBB.Core
 {
+    /// <summary>
+    /// Klasa zarządzająca grupą bohaterów (drużyną). 
+    /// Zawiera metody do dodawania/usuwania członków, wyszukiwania 
+    /// za pomocą LINQ oraz sortowania listy za pomocą IComparer.
+    /// </summary>
     public class Party: ICloneable
     {
         #region EF
@@ -147,7 +152,7 @@ namespace Dnd_BBB.Core
 
         public void SortByName() => PartyMembers.Sort();
 
-        // Ponizej sorty, sortuja rosnaco, kinda nieintuicyjne ale nie bd tego zmieniac
+        // Ponizej sorty, sortuja rosnaco, kinda nieintuicyjne ale nie bd tego zmieniac - chodzi o kolejnosc x i y w Comparerach
         public void SortByHp() => PartyMembers.Sort(new HpComparer());
         public void SortByStr() => PartyMembers.Sort(new StrComparer());
         public void SortByDext() => PartyMembers.Sort(new DextComparer());
@@ -168,7 +173,6 @@ namespace Dnd_BBB.Core
         public object Clone()
         {
             return this.MemberwiseClone();
-            //throw new NotImplementedException();
         }
         public Party DeepCopy()
         {

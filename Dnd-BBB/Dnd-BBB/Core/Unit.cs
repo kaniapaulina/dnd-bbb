@@ -9,6 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 namespace Dnd_BBB.Core
 {
+    /// <summary>
+    /// Klasa bazowa dla wszystkich jednostek w grze. 
+    /// Przechowuje podstawowe statystyki (HP, AC, atrybuty) oraz 
+    /// implementuje mechaniki walki (TakeDamage) i poziomu (LevelUp).
+    /// </summary>
     public abstract class Unit : ILevel, IAction
     {
         private int hp; //Hitpoints
@@ -157,17 +162,10 @@ namespace Dnd_BBB.Core
             }
         }
 
-        //public int Level => throw new NotImplementedException();
         public int Level
         {
             get;
             set;
-            //{
-                //if (value < 0 || value > 20)
-                //{
-                //    throw new Exception("Impossible level achieved (how??");
-                //}
-            //}
         }
 
         public bool LifeStatus => (Hp <= 0); //gdy hp mniejsze lub rowne zero
@@ -189,7 +187,6 @@ namespace Dnd_BBB.Core
 
         public void LevelUp()
         {
-            //throw new NotImplementedException();
             Random rand = new Random();
             int maxroll = UnitClass.HitDie;
             int roll = rand.Next(1, maxroll + 1);
@@ -203,7 +200,6 @@ namespace Dnd_BBB.Core
 
             if (LifeStatus) return;
             Hp -= damage;
-            //throw new NotImplementedException();
             if (Hp <= 0)
             {
                 Hp = 0;
@@ -217,7 +213,6 @@ namespace Dnd_BBB.Core
 
         public void HealDamage(int heal)
         {
-            //throw new NotImplementedException();
             if(LifeStatus) return;
             Hp += heal;
         }

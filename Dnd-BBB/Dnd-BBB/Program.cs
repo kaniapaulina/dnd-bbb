@@ -5,6 +5,16 @@ using Dnd_BBB.Service;
 
 namespace Dnd_BBB
 {
+    public static class GlobalState
+    {
+        public static Party CurrentParty { get; set; } = new Party("Moja Drużyna");
+        public static void RefreshFromDisk(string path)
+        {
+            var loaded = StorageService.ReadPartyJSON(path);
+            if (loaded != null) CurrentParty = loaded;
+        }
+    }
+
     public enum StatType { Str, Dex, Intel, Wis, Charm, Cons }
     internal class Program
     {
@@ -16,9 +26,6 @@ namespace Dnd_BBB
             char1.LevelUp();
             char1.LevelUp();
 
-
-            //Console.WriteLine(char1);
-
             UnitRace r2 = new Dragonborn();
             UnitClass c2 = new Sorcerer();
             Character char2 = new Character("Wiktoria", c2, r2);
@@ -27,8 +34,6 @@ namespace Dnd_BBB
             char2.AddSpell("Burning Hands");
             char2.AddProficiencies("Deception", "Insight", "Arcana");
 
-
-            //Console.WriteLine(char2);
 
             UnitRace r3 = new Gnome();
             UnitClass c3 = new Ranger();
@@ -41,11 +46,6 @@ namespace Dnd_BBB
             p1.AddMember(char3);
 
             Console.WriteLine(p1);
-
-            char1.TakeDamage(40);
-
-            //p1.SortByHp();
-            //Console.WriteLine(p1);
 
             // TEST NA JSONA
             Console.WriteLine("======== TEST JSON");

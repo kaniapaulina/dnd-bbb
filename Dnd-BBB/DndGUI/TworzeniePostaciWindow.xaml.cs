@@ -22,38 +22,29 @@ using Dnd_BBB.Exceptions;
 namespace DndGUI
 {
     /// <summary>
-    /// Logika interakcji dla klasy TworzeniePostaciWindow.xaml
+    /// Okno kreacji bohatera. Obsługuje automatyczne losowanie statystyk (StatService) 
+    /// oraz walidację dostępności czarów dla konkretnych klas.
     /// </summary>
     public partial class TworzeniePostaciWindow : Window
     {
-        private Character character;
+        private Character character = new Character();
         private bool rollClicked = false;
 
         public TworzeniePostaciWindow()
         {
             InitializeComponent();
-            character = new Character();
-
-            if (this.FindName("txtKlasaPostaci") is TextBox tb)
-            {
-                tb.TextChanged += TxtKlasaPostaci_TextChanged;
-            }
-
-            UpdateSpellControls();
+            txtKlasaPostaci.TextChanged += (s, e) => UpdateClassAndSpells();
         }
-
-
-        private void TxtKlasaPostaci_TextChanged(object? sender, TextChangedEventArgs e)
+        private void UpdateClassAndSpells()
         {
-            if (sender is TextBox tb)
-            {
-                var className = tb.Text?.Trim() ?? string.Empty;
-                character.UnitClass = CreateUnitClassByName(className);
-                UpdateSpellControls();
-            }
-        }
+            character.UnitClass = GetClass(txtKlasaPostaci.Text);
+            bool canCast = character.UnitClass?.Spell ?? false;
 
-        private UnitClass? CreateUnitClassByName(string name)
+            txtSpell1.IsEnabled = txtSpell2.IsEnabled = txtSpell3.IsEnabled = txtSpell4.IsEnabled = canCast;
+            if (!canCast) txtSpell1.Text = txtSpell2.Text = txtSpell3.Text = txtSpell4.Text = "";
+        }
+        
+        private UnitClass? GetClass(string name)
         {
             return name switch
             {
@@ -73,96 +64,47 @@ namespace DndGUI
             };
         }
 
-
-        private void UpdateSpellControls()
+        private UnitRace? GetRace(string name)
         {
-            bool canCast = character.UnitClass?.Spell ?? false;
-
-            if (this.FindName("txtSpell1") is TextBox s1) s1.IsEnabled = canCast;
-            if (this.FindName("txtSpell2") is TextBox s2) s2.IsEnabled = canCast;
-            if (this.FindName("txtSpell3") is TextBox s3) s3.IsEnabled = canCast;
-            if (this.FindName("txtSpell4") is TextBox s4) s4.IsEnabled = canCast;
-
-
-            if (!canCast)
+            return name switch
             {
-                if (this.FindName("txtSpell1") is TextBox s10) s10.Text = string.Empty;
-                if (this.FindName("txtSpell2") is TextBox s20) s20.Text = string.Empty;
-                if (this.FindName("txtSpell3") is TextBox s30) s30.Text = string.Empty;
-                if (this.FindName("txtSpell4") is TextBox s40) s40.Text = string.Empty;
-            }
+                "Human" => new Human(),
+                "Elf" => new Elf(),
+                "Dwarf" => new Dwarf(),
+                "Halfling" => new Halfling(),
+                "Dragonborn" => new Dragonborn(),
+                "Gnome" => new Gnome(),
+                "Half-Orc" => new Half_Orc(),
+                "Half-Elf" => new Half_Elf(),
+                "Tiefling" => new Tiefling(),
+                _ => null
+            };
+        }
+
+        private void FillStats()
+        {
+            losStr.Text = character.Str.ToString();
+            losDex.Text = character.Dext.ToString();
+            losInt.Text = character.Intel.ToString();
+            losWis.Text = character.Wis.ToString();
+            losChar.Text = character.Charm.ToString();
+            losConst.Text = character.Cons.ToString();
         }
 
         private void RollButton_Click(object sender, RoutedEventArgs e)
         {
             if (rollClicked) return; // dodatkowe zabezpieczenie
-            rollClicked = true;
 
-            // wyłącz przycisk (sender powinien być Button)
-            if (sender is Button btn) btn.IsEnabled = false;
-
-            character.UnitClass = CreateUnitClassByName((this.FindName("txtKlasaPostaci") as TextBox)?.Text?.Trim() ?? string.Empty);
-
-            switch ((this.FindName("txtRasaPostaci") as TextBox)?.Text?.Trim())
-            {
-                case "Human":
-                    Human human = new Human();
-                    character.UnitRace = human;
-                    break;
-
-                case "Elf":
-                    Elf elf = new Elf();
-                    character.UnitRace = elf;
-                    break;
-
-                case "Dwarf":
-                    Dwarf dwarf = new Dwarf();
-                    character.UnitRace = dwarf;
-                    break;
-
-                case "Halfling":
-                    Halfling halfling = new Halfling();
-                    character.UnitRace = halfling;
-                    break;
-
-                case "Dragonborn":
-                    Dragonborn dragonborn = new Dragonborn();
-                    character.UnitRace = dragonborn;
-                    break;
-
-                case "Gnome":
-                    Gnome gnome = new Gnome();
-                    character.UnitRace = gnome;
-                    break;
-
-                case "Half-Orc":
-                    Half_Orc halfOrc = new Half_Orc();
-                    character.UnitRace = halfOrc;
-                    break;
-
-                case "Half-Elf":
-                    Half_Elf halfElf = new Half_Elf();
-                    character.UnitRace = halfElf;
-                    break;
-
-                default:
-                    MessageBox.Show("Nieznana rasa postaci!");
-                    break;
-            }
+            character.UnitClass = GetClass(txtKlasaPostaci.Text);
+            character.UnitRace = GetRace(txtRasaPostaci.Text);
 
             if (character.UnitClass != null && character.UnitRace != null)
             {
                 character.UnitClass.AssignStats(character);
-
-                losStr.Text = character.Str.ToString();
-                losDex.Text = character.Dext.ToString();
-                losInt.Text = character.Intel.ToString();
-                losWis.Text = character.Wis.ToString();
-                losChar.Text = character.Charm.ToString();
-                losConst.Text = character.Cons.ToString();
-
-
-                UpdateSpellControls();
+                FillStats();
+                rollClicked = true;
+                ((Button)sender).IsEnabled = false;
+                UpdateClassAndSpells();
 
             }
             else
@@ -180,8 +122,7 @@ namespace DndGUI
         private void ZapiszButton_Click(Object sender, RoutedEventArgs e)
         {
 
-            character.Name = txtNazwaPostaci.Text?.Trim() ?? character.Name;
-
+            character.Name = txtNazwaPostaci.Text;
             character.AddProficiencies(txtUmiejetnosc1.Text, txtUmiejetnosc2.Text, txtUmiejetnosc3.Text);
 
 
@@ -220,30 +161,8 @@ namespace DndGUI
             if (int.TryParse(losChar.Text, out var charValue)) character.Charm = charValue;
             if (int.TryParse(losConst.Text, out var conValue)) character.Cons = conValue;
 
-            // Dodajemy postać do cache aplikacji (Application.Current.Properties)
-            if (Application.Current?.Properties != null)
-            {
-                if (!Application.Current.Properties.Contains("Characters"))
-                {
-                    Application.Current.Properties["Characters"] = new List<Character>();
-                }
-
-                if (Application.Current.Properties["Characters"] is List<Character> list)
-                {
-                    // unikamy duplikatów po nazwie
-                    if (!list.Any(ch => ch.Name == character.Name))
-                    {
-                        list.Add(character);
-                    }
-
-                    // Odśwież wszystkie otwarte okna EdycjaPostaciWindow
-                    var openEditors = Application.Current.Windows.OfType<EdycjaPostaciWindow>().ToList();
-                    foreach (var w in openEditors)
-                    {
-                        w.RefreshCharacters(list);
-                    }
-                }
-            }
+            AppCache.Characters.Add(character);
+            AppCache.SyncEditors();
 
             this.Close();
         }

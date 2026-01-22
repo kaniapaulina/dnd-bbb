@@ -413,7 +413,7 @@
             FontWeight="Bold" BorderBrush="#FFDFF8D0"
             Grid.Row="1" Width="186"/>
 
-        <Label Height="39" Width="202" Grid.Row="3" 
+        <Label Height="39" Width="202" Grid.Row="3"
             Grid.Column="1" 
             BorderBrush="#FFDFF8D0"
             Background="#FF89C06F" 
@@ -422,7 +422,7 @@
             Content="Bonus do umiejętności"
             BorderThickness="2"/>
 
-        <TextBox x:Name="txtBonusUmiejetnosci" Grid.Column="1" 
+        <TextBox x:Name="txtBonusUmiejetnosci" Grid.Column="1" IsReadOnly="True"
             HorizontalAlignment="Center" Height="43" TextWrapping="Wrap" 
             Text="+2" VerticalAlignment="Center" 
             Width="45" 
