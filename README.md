@@ -32,8 +32,7 @@ Nasza aplikacja WPF została stworzona do zarządzania postaciami i drużynami w
 - HandyControl wymaga zasobów tematów — jeśli GUI wygląda nieprawidłowo, należy upewnić się, że odpowiadające style/zasoby są załadowane (sprawdź `App.xaml` i referencje do HandyControl).
 
 ## Autorki
-- Paulina Kania- kaniapaulina@student.agh.edu.pl
-- Natalia Kruk - nkruk@student.agh.edu.pl
-- Wiktoria Kowalska - kowalska@student.agh.edu.pl
-
+- Paulina Kania
+- Natalia Kruk
+- Wiktoria Kowalska
 
