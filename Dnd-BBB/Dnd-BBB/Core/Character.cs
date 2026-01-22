@@ -27,7 +27,7 @@ namespace Dnd_BBB.Core
         {
             get
             {
-                return 3 + Level;
+                return 2 + Level;
             }
         }
         //Spella Proficinties i Equipment sa przechowywane jako json co umizliwia zapis do bazy danych, same obiekty nie sa mapowane
@@ -142,16 +142,16 @@ namespace Dnd_BBB.Core
             ProficienciesJson = JsonSerializer.Serialize(Proficiencies);
         }
 
-        //public int RollProficiency(string p)
-        //{
-        //    if(!Proficiencies.Contains(p))
-        //    {
-        //        throw new Exception("You dont have that Proficiency");
-        //    }
-        //    Random rand = new Random();
-        //    int roll = rand.Next(1,21) + ProficiencyBonus;
-        //    return roll;
-        //}
+        public int RollProficiency(string p)
+        {
+            if(!Proficiencies.Contains(p))
+            {
+                throw new Exception("You dont have that Proficiency");
+            }
+            Random rand = new Random();
+            int roll = rand.Next(1,21) + ProficiencyBonus;
+            return roll;
+        }
 
         /*public virtual void LevelUp()
         {

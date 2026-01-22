@@ -21,6 +21,7 @@ using Dnd_BBB.Exceptions;
 
 namespace DndGUI
 {
+   
     /// <summary>
     /// Logika interakcji dla klasy EdycjaPostaciWindow.xaml
     /// </summary>
@@ -57,15 +58,6 @@ namespace DndGUI
         {
             try
             {
-                // preferuj dane z bazy
-                var fromDb = PartyRepository.GetAllCharacters();
-                if (fromDb != null && fromDb.Any())
-                {
-                    loadedCharacters = fromDb;
-                    if (Application.Current?.Properties != null) Application.Current.Properties["Characters"] = loadedCharacters.ToList();
-                    return;
-                }
-
                 if (Application.Current?.Properties != null && Application.Current.Properties.Contains("Characters"))
                 {
                     if (Application.Current.Properties["Characters"] is List<Character> chars)
@@ -100,8 +92,7 @@ namespace DndGUI
         }
 
 
-        // Pozwalamy na nullable e, by można było wywołać z kodu z null (bez ostrzeżeń)
-        private void charactersComboBox_SelectionChanged(object sender, SelectionChangedEventArgs? e)
+        private void charactersComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if ((sender as ComboBox)?.SelectedItem is not Character c) return;
 
@@ -110,22 +101,26 @@ namespace DndGUI
             c.Spells ??= new List<string>();
             c.Equipment ??= new List<string>();
 
+
             if (c.UnitClass != null && (c.Equipment == null || c.Equipment.Count == 0))
             {
                 c.UnitClass.AssignStarterPack(c);
             }
 
+
             SetTextBoxOrLabel("txtClass", c.UnitClass?.ClassName ?? string.Empty);
             SetTextBoxOrLabel("txtRace", c.UnitRace?.RaceName ?? string.Empty);
+
 
             SetContentControl("badgeLvl", c.Level.ToString());
             SetContentControl("badgeHp", c.Hp.ToString());
             SetContentControl("badgeAc", c.Ac.ToString());
             SetContentControl("badgeGold", c.Gold.ToString());
 
-            SetListViewItems("listViewProficiencies", c.Proficiencies ?? new List<string>());
-            SetListViewItems("listViewSpells", c.Spells ?? new List<string>());
-            SetListViewItems("listViewEquipment", c.Equipment ?? new List<string>());
+
+            SetListViewItems("listViewProficiencies", c.Proficiencies);
+            SetListViewItems("listViewSpells", c.Spells);
+            SetListViewItems("listViewEquipment", c.Equipment);
 
             SetStatValueControl("lblDextValue", c.Dext);
             SetStatValueControl("lblIntValue", c.Intel);
@@ -147,11 +142,12 @@ namespace DndGUI
             SetBonusTextBox("txtCharBonus", CalcModifier(c.Charm));
             SetBonusTextBox("txtConsBonus", CalcModifier(c.Cons));
 
+
             SetBonusTextBox("txtBonusUmiejetnosci", c.ProficiencyBonus);
         }
 
 
-        private async void SaveChanges_Click(object sender, RoutedEventArgs e)
+        private void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
             var combo = this.FindName("charactersComboBox") as ComboBox;
             var c = combo?.SelectedItem as Character;
@@ -226,13 +222,22 @@ namespace DndGUI
                     }
                 }
 
-                // zamiast bezpośredniego zapisu do DB - enqueue do background worker
-                await BackgroundDbQueue.Instance.EnqueueSaveCharacterAsync(c);
+                // Proficiency, Spells, Equipment już modyfikowane bezpośrednio przez przyciski — tutaj upewnimy się, że cache zawiera zaktualizowany obiekt
+                if (Application.Current?.Properties != null && Application.Current.Properties.Contains("Characters"))
+                {
+                    if (Application.Current.Properties["Characters"] is List<Character> list)
+                    {
+                        // update reference if needed (porównanie po Name)
+                        var idx = list.FindIndex(x => x.Name == c.Name);
+                        if (idx >= 0) list[idx] = c;
+                        else list.Add(c);
+                    }
+                }
 
                 // odśwież widok (combo + listy)
                 if (combo != null) charactersComboBox_SelectionChanged(combo, null);
 
-                MessageBox.Show("Żądanie zapisu wysłane (zapis w tle).", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Zapisano zmiany.", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -261,7 +266,7 @@ namespace DndGUI
             try
             {
                 c.AddSpell(val);
-                SetListViewItems("listViewSpells", c.Spells ?? new List<string>());
+                SetListViewItems("listViewSpells", c.Spells);
                 if (tb != null) tb.Clear();
             }
             catch (Exception ex)
@@ -295,7 +300,7 @@ namespace DndGUI
 
             if (c.Spells.Remove(sel))
             {
-                SetListViewItems("listViewSpells", c.Spells ?? new List<string>());
+                SetListViewItems("listViewSpells", c.Spells);
             }
             else
             {
@@ -321,7 +326,7 @@ namespace DndGUI
             }
 
             c.Equipment.Add(val);
-            SetListViewItems("listViewEquipment", c.Equipment ?? new List<string>());
+            SetListViewItems("listViewEquipment", c.Equipment);
             if (tb != null) tb.Clear();
         }
 
@@ -350,7 +355,7 @@ namespace DndGUI
 
             if (c.Equipment.Remove(sel))
             {
-                SetListViewItems("listViewEquipment", c.Equipment ?? new List<string>());
+                SetListViewItems("listViewEquipment", c.Equipment);
             }
             else
             {

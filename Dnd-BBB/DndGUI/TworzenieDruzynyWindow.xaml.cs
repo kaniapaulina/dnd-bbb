@@ -13,8 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Dnd_BBB.Service;
-using System.IO;
 
 namespace DndGUI
 {
@@ -119,28 +117,51 @@ namespace DndGUI
                 PartyMembers = partyMembers.ToList()
             };
 
+            // Zapisz do cache aplikacji (Application.Current.Properties["Parties"]) jako ObservableCollection
             try
             {
-                // enqueue zapisu do backendu zamiast bezpośredniego SaveParty
-                BackgroundDbQueue.Instance.EnqueueSavePartyAsync(party);
-
-                // zaktualizuj cache aplikacji optymistycznie
                 if (Application.Current?.Properties != null)
                 {
-                    if (Application.Current.Properties.Contains("Parties") && Application.Current.Properties["Parties"] is ObservableCollection<Party> oc)
+                    // utwórz ObservableCollection jeśli brak
+                    if (!Application.Current.Properties.Contains("Parties"))
                     {
-                        var idx = oc.ToList().FindIndex(p => p.PartyName == party.PartyName);
-                        if (idx >= 0) oc[idx] = party;
-                        else oc.Add(party);
-                        Application.Current.Properties["Parties"] = oc;
+                        Application.Current.Properties["Parties"] = new ObservableCollection<Party>();
+                    }
+
+                    // obsłuż różne typy, ale preferuj ObservableCollection
+                    if (Application.Current.Properties["Parties"] is ObservableCollection<Party> coll)
+                    {
+                        var existing = coll.FirstOrDefault(p => p.PartyName == party.PartyName);
+                        if (existing != null)
+                        {
+                            // zastąp element — zachowujemy indeks, żeby powiadomić UI
+                            var idx = coll.IndexOf(existing);
+                            coll[idx] = party;
+                        }
+                        else
+                        {
+                            coll.Add(party);
+                        }
+                    }
+                    else if (Application.Current.Properties["Parties"] is List<Party> list)
+                    {
+                        var idx = list.FindIndex(p => p.PartyName == party.PartyName);
+                        if (idx >= 0) list[idx] = party;
+                        else list.Add(party);
+
+                        // zamień listę na ObservableCollection, żeby UI mogło automatycznie reagować
+                        var newColl = new ObservableCollection<Party>(list);
+                        Application.Current.Properties["Parties"] = newColl;
                     }
                     else
                     {
-                        Application.Current.Properties["Parties"] = new ObservableCollection<Party>(new[] { party });
+                        // inne typy -> nadpisz ObservableCollection
+                        Application.Current.Properties["Parties"] = new ObservableCollection<Party> { party };
                     }
                 }
 
-                MessageBox.Show("Żądanie zapisu drużyny wysłane (zapis w tle).", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Zapisano drużynę.", "OK", MessageBoxButton.OK, MessageBoxImage.Information);
+
 
                 foreach (Window w in Application.Current.Windows)
                 {
@@ -149,10 +170,11 @@ namespace DndGUI
                         ed.RefreshPartiesFromCache();
                     }
                 }
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Błąd zapisu do bazy: {ex.Message}", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Błąd zapisu: {ex.Message}", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             this.Close();
