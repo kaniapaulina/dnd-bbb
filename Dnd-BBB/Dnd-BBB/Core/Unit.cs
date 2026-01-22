@@ -1,6 +1,7 @@
 ﻿ using Dnd_BBB.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Security.Cryptography.X509Certificates;
@@ -114,8 +115,35 @@ namespace Dnd_BBB.Core
         }
 
 
-        public UnitRace UnitRace { get; set; }
-        public UnitClass UnitClass { get; set; }
+        // unitRace i unitClass jako stringi sa zapisywane w bazie danych, same obiekty nie sa mapowane
+        [NotMapped]
+        private UnitRace _unitRace;
+        [NotMapped]
+        public UnitRace UnitRace
+        {
+            get => _unitRace;
+            set
+            {
+                _unitRace = value;
+                UnitRaceName = value?.RaceName;
+            }
+        }
+
+        [NotMapped]
+        private UnitClass _unitClass;
+        [NotMapped]
+        public UnitClass UnitClass
+        {
+            get => _unitClass;
+            set
+            {
+                _unitClass = value;
+                UnitClassName = value?.ClassName;
+            }
+        }
+
+        public string UnitRaceName { get; set; }
+        public string UnitClassName { get; set; }
 
         public int ProficiencyBonus
         {

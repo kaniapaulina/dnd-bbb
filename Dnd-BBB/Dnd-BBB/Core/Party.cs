@@ -1,16 +1,40 @@
 ﻿using Dnd_BBB.Exceptions;
+using Dnd_BBB.Service;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Dnd_BBB.Core
 {
-    public class Party
+    public class Party: ICloneable
     {
-        string partyName;
-        List<Character> partyMembers = new List<Character>();
+        #region EF
+        [Key]
+        public int PartyId { get; set; }
+        public string PartyName { get; set; }
+        public virtual List<Character> PartyMembers { get; set; } = new();
+
+        public void SaveToDb(Party party)
+        {
+            using (var db = new PartyDbContext())
+            {
+                foreach (var c in party.PartyMembers)
+                {
+                    c.SpellsJson = JsonSerializer.Serialize(c.Spells ?? new List<string>());
+                    c.ProficienciesJson = JsonSerializer.Serialize(c.Proficiencies ?? new List<string>());
+                    c.EquipmentJson = JsonSerializer.Serialize(c.Equipment ?? new List<string>());
+                    c.Party = party;
+                }
+                db.Parties.Add(party);
+                db.SaveChanges();
+            }
+        }
+
+        #endregion EF
 
         public Party() { }
         public Party(string nazwa)
@@ -63,9 +87,6 @@ namespace Dnd_BBB.Core
         public void SortByDext() => PartyMembers.Sort(new DextComparer());
 
 
-        public string PartyName { get => partyName; set => partyName = value; }
-        public List<Character> PartyMembers { get => partyMembers; set => partyMembers = value; }
-
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -76,6 +97,21 @@ namespace Dnd_BBB.Core
             }
 
             return sb.ToString();
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+            //throw new NotImplementedException();
+        }
+        public Party DeepCopy()
+        {
+            Party kopia = (Party)this.Clone();
+            kopia.PartyName = (string)this.PartyName.Clone();
+            kopia.PartyMembers = new List<Character>(PartyMembers.Select(
+                x => (Character)x.Clone()
+                ));
+            return kopia;
         }
     }
 }

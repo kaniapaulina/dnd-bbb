@@ -22,9 +22,10 @@ namespace Dnd_BBB
             UnitRace r2 = new Dragonborn();
             UnitClass c2 = new Sorcerer();
             Character char2 = new Character("Wiktoria", c2, r2);
-            char2.AddSpell("Daj Dupe");
-            char2.AddSpell("Abrakababra");
-            char2.AddProficiencies("Łowienie ryb", "Gotowanie dań mięsnych", "Inwestycja miejsc zbrodni");
+            char2.AddSpell("Ray of Frost");
+            char2.AddSpell("Acid Splash");
+            char2.AddSpell("Burning Hands");
+            char2.AddProficiencies("Deception", "Insight", "Arcana");
 
 
             //Console.WriteLine(char2);
@@ -32,8 +33,9 @@ namespace Dnd_BBB
             UnitRace r3 = new Gnome();
             UnitClass c3 = new Ranger();
             Character char3 = new Character("Nates", c3, r3);
+            char3.AddProficiencies("Survival", "Stealth", "Athletics");
 
-            Party p1 = new Party("Nerdy nerdują");
+            Party p1 = new Party("Magic nerds");
             p1.AddMember(char1);
             p1.AddMember(char2);
             p1.AddMember(char3);
@@ -51,6 +53,7 @@ namespace Dnd_BBB
 
             Party odczyt = StorageService.ReadPartyJSON("party.json");
             Console.WriteLine(odczyt);
+            p1.SaveToDb(p1);
         }
     }
 }

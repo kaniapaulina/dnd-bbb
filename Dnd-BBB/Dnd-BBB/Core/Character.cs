@@ -1,15 +1,24 @@
-﻿using System;
+﻿using Dnd_BBB.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Dnd_BBB.Exceptions;
 
 namespace Dnd_BBB.Core
 {
-    public class Character:Unit, IEquatable<Character>, IComparable<Character>
+    public class Character:Unit, IEquatable<Character>, IComparable<Character>, ICloneable
     {
+        #region EF
+        public int CharacterId { get; set; }
+        public int PartyId { get; set; }
+        public virtual Party Party { get; set; }
+
+        #endregion EF
+
         private string name;
         private int gold;
         //private int level;
@@ -21,9 +30,49 @@ namespace Dnd_BBB.Core
                 return 2 + Level;
             }
         }
-        public List<string> Spells { get; set; } = new List<string>();
-        public List<string> Proficiencies { get; set; } = new List<string>();
-        public List<string> Equipment { get; set; } = new List<string>();
+        //Spella Proficinties i Equipment sa przechowywane jako json co umizliwia zapis do bazy danych, same obiekty nie sa mapowane
+        [NotMapped]
+        private List<string> _spells;
+        [NotMapped]
+        public List<string> Spells
+        {
+            get => _spells ??= (string.IsNullOrEmpty(SpellsJson) ? new List<string>() : JsonSerializer.Deserialize<List<string>>(SpellsJson));
+            set
+            {
+                _spells = value ?? new List<string>();
+                SpellsJson = JsonSerializer.Serialize(_spells);
+            }
+        }
+
+        public string SpellsJson { get; set; } = "[]";
+
+        [NotMapped]
+        private List<string> _proficiencies;
+        [NotMapped]
+        public List<string> Proficiencies
+        {
+            get => _proficiencies ??= (string.IsNullOrEmpty(ProficienciesJson) ? new List<string>() : JsonSerializer.Deserialize<List<string>>(ProficienciesJson));
+            set
+            {
+                _proficiencies = value ?? new List<string>();
+                ProficienciesJson = JsonSerializer.Serialize(_proficiencies);
+            }
+        }
+        public string ProficienciesJson { get; set; } = "[]";
+
+        [NotMapped]
+        private List<string> _equipment;
+        [NotMapped]
+        public List<string> Equipment
+        {
+            get => _equipment ??= (string.IsNullOrEmpty(EquipmentJson) ? new List<string>() : JsonSerializer.Deserialize<List<string>>(EquipmentJson));
+            set
+            {
+                _equipment = value ?? new List<string>();
+                EquipmentJson = JsonSerializer.Serialize(_equipment);
+            }
+        }
+        public string EquipmentJson { get; set; } = "[]";
 
         public string Name { get => name;
             set
@@ -82,6 +131,7 @@ namespace Dnd_BBB.Core
                 throw new Exception($"Your max spell count is: {MaxSpellCount}");
             }
             Spells.Add(spell);
+            SpellsJson = JsonSerializer.Serialize(Spells);
         }
 
         public void AddProficiencies(string p1, string p2, string p3)
@@ -89,6 +139,7 @@ namespace Dnd_BBB.Core
             Proficiencies.Add(p1);
             Proficiencies.Add(p2);
             Proficiencies.Add(p3);
+            ProficienciesJson = JsonSerializer.Serialize(Proficiencies);
         }
 
         public int RollProficiency(string p)
@@ -161,6 +212,12 @@ namespace Dnd_BBB.Core
         protected override void DeathScreen(int damage)
         {
             Console.WriteLine($"{Name} took a lot of damage ({damage}) and has died in an epic battle xoxoxox");
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+            //throw new NotImplementedException();
         }
     }
 }
