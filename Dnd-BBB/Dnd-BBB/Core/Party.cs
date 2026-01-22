@@ -1,14 +1,19 @@
 ﻿using Dnd_BBB.Classes;
 using Dnd_BBB.Exceptions;
+using Dnd_BBB.Migrations;
 using Dnd_BBB.Races;
 using Dnd_BBB.Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Data.Entity;
 
 namespace Dnd_BBB.Core
 {
@@ -38,7 +43,44 @@ namespace Dnd_BBB.Core
                         c.EquipmentJson = JsonSerializer.Serialize(c.Equipment ?? new List<string>());
                         c.Party = party;
                     }
+                Party existingParty = null;
+                    if (party.PartyId != 0)
+                        existingParty = db.Parties.Include(p => p.PartyMembers).FirstOrDefault(p => p.PartyId == party.PartyId);
+                    else
+                        existingParty = db.Parties.Include(p => p.PartyMembers).FirstOrDefault(p => p.PartyName == party.PartyName);
+
+                    if (existingParty == null)
+                {
+                    // nowy party 
                     db.Parties.Add(party);
+                }
+                else
+                {
+                        // aktualizuj party
+                        existingParty.PartyName = party.PartyName;
+                        db.Entry(existingParty).State = System.Data.Entity.EntityState.Modified;
+
+                        foreach (var newChar in party.PartyMembers)
+                        {
+                        var match = existingParty.PartyMembers.FirstOrDefault(ec => ec.Name == newChar.Name);
+                        if (match == null)
+                        {
+                                // nowa postać
+                                newChar.PartyId = existingParty.PartyId;
+                                newChar.Party = existingParty;
+                                db.Characters.Add(newChar);
+                            }
+                        else
+                        {
+                            // istniejąca
+                            match.Hp = newChar.Hp;
+                            match.SpellsJson = newChar.SpellsJson;
+                            match.ProficienciesJson = newChar.ProficienciesJson;
+                            match.EquipmentJson = newChar.EquipmentJson;
+                            db.Entry(match).State = System.Data.Entity.EntityState.Modified;
+                        }
+                    }
+                }
                     db.SaveChanges();
                 }
             }
@@ -137,7 +179,7 @@ namespace Dnd_BBB.Core
             return PartyMembers.Exists(m => m.Name == mName);
         }
 
-        public void DeleteMember(String dName)
+        public void DeleteMember(string dName)
         {
             if(ExistMember(dName))
             {
@@ -161,7 +203,7 @@ namespace Dnd_BBB.Core
 
         public void SortByName() => PartyMembers.Sort();
 
-        // Ponizej sorty, sortuja rosnaco, kinda nieintuicyjne ale nie bd tego zmieniac - chodzi o kolejnosc x i y w Comparerach
+        // Ponizej sorty, sortuja rosnaco
         public void SortByHp() => PartyMembers.Sort(new HpComparer());
         public void SortByStr() => PartyMembers.Sort(new StrComparer());
         public void SortByDext() => PartyMembers.Sort(new DextComparer());

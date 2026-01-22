@@ -34,7 +34,7 @@ namespace Dnd_BBB.Core
                 return 2 + Level;
             }
         }
-        //Spella Proficinties i Equipment sa przechowywane jako json co umizliwia zapis do bazy danych, same obiekty nie sa mapowane
+        //Spells Proficinties i Equipment sa przechowywane jako json co umozliwia zapis do bazy danych, same obiekty nie sa mapowane
         [NotMapped]
         private List<string> _spells;
         [NotMapped]
