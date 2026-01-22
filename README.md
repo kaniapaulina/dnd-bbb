@@ -28,8 +28,8 @@ Nasza aplikacja WPF została stworzona do zarządzania postaciami i drużynami w
 6. W oknie edycji drużyny dostępna jest opcja eksportu (zapis do folderu `Documents\DnD_Exports`).
 
 ## Dodatkowe informacje
-- Jeśli zobaczysz komunikat o błędzie bazy danych podczas uruchamiania, sprawdź connection string oraz czy silnik SQL jest dostępny.
-- HandyControl wymaga zasobów tematów — jeśli GUI wygląda nieprawidłowo, upewnij się, że odpowiadające style/zasoby są załadowane (sprawdź `App.xaml` i referencje do HandyControl).
+- W razie pojawienia się komunikatu o błędzie bazy danych podczas uruchamiania, należy sprawdzić connection string oraz czy silnik SQL jest dostępny.
+- HandyControl wymaga zasobów tematów — jeśli GUI wygląda nieprawidłowo, należy upewnić się, że odpowiadające style/zasoby są załadowane (sprawdź `App.xaml` i referencje do HandyControl).
 
 ## Autorki
 - Paulina Kania- kaniapaulina@student.agh.edu.pl
