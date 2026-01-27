@@ -61,30 +61,50 @@
                    Foreground="#FFDFF8D0" 
                    FontWeight="Bold" FontSize="16" Margin="98,0,0,0"/>
 
-            <TextBox  x:Name="txtKlasaPostaci" 
-              Grid.Row="1" Grid.Column="1"
-              Margin="10,0,10,0" 
-              VerticalAlignment="Center"
-              Foreground="#FF316956"
-              FontWeight="Bold"
-              Height="34" Background="#FFDFF8D0"
-              BorderBrush="{x:Null}" />
-
+            <ComboBox  x:Name="cmbRasaPostaci" SelectedIndex="0"
+             Background="#FFDFF8D0" BorderBrush="{x:Null}"
+             Foreground="#FF316956"
+             FontWeight="Bold" Grid.Column="1" Margin="10,7,10,7" Grid.Row="2">
+                <ComboBoxItem Content="Human"/>
+                <ComboBoxItem Content="Elf"/>
+                <ComboBoxItem Content="Dwarf"/>
+                <ComboBoxItem Content="Halfling"/>
+                <ComboBoxItem Content="Dragonborn"/>
+                <ComboBoxItem Content="Gnome"/>
+                <ComboBoxItem Content="Half-Orc"/>
+                <ComboBoxItem Content="Half-Elf"/>
+                <ComboBoxItem Content="Tiefling"/>
+            </ComboBox>
 
             <Label Content="Rasa" 
             Grid.Row="2" Height="34" 
              HorizontalContentAlignment="Center" 
              VerticalContentAlignment="Center" Width="60" 
-             HorizontalAlignment="Left" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#FFDFF8D0" FontWeight="Bold" FontSize="16" Margin="108,0,0,0"/>
+             HorizontalAlignment="Left" BorderBrush="{x:Null}" 
+             Background="{x:Null}" Foreground="#FFDFF8D0" 
+             FontWeight="Bold" FontSize="16" Margin="108,0,0,0"/>
 
 
-            <TextBox Grid.Row="2" 
-             Margin="10,8,10,7" Grid.Column="1" 
-             x:Name="txtRasaPostaci"
+            <ComboBox Grid.Row="1" SelectedIndex="11"
+             Margin="10,7,10,7" Grid.Column="1" 
+             x:Name="cmbKlasaPostaci"
+             SelectionChanged="CmbKlasaPostaci_SelectionChanged"
              Background="#FFDFF8D0" BorderBrush="{x:Null}"
              Foreground="#FF316956"
              FontWeight="Bold">
-            </TextBox>
+                <ComboBoxItem Content="Barbarian"/>
+                <ComboBoxItem Content="Bard"/>
+                <ComboBoxItem Content="Cleric"/>
+                <ComboBoxItem Content="Druid"/>
+                <ComboBoxItem Content="Fighter"/>
+                <ComboBoxItem Content="Monk"/>
+                <ComboBoxItem Content="Paladin"/>
+                <ComboBoxItem Content="Ranger"/>
+                <ComboBoxItem Content="Rogue"/>
+                <ComboBoxItem Content="Sorcerer"/>
+                <ComboBoxItem Content="Warlock"/>
+                <ComboBoxItem Content="Wizard"/>
+            </ComboBox>
 
             <Label Content="Umiejętności" 
            Grid.Row="4" Height="34" 
@@ -178,6 +198,8 @@
 
             <Button Grid.Column="2" Content="Zapisz postać" 
                     HorizontalAlignment="Left" 
+                    x:Name="btnZapiszPostac"
+                    IsEnabled="False"
                     Height="40" Margin="44,8,0,0" 
                     Grid.Row="3" Width="138"
                     BorderThickness="2"

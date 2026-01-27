@@ -43,6 +43,7 @@ namespace DndGUI
         {
             comboBoxParties.ItemsSource = AppCache.Parties;
             comboBoxParties.DisplayMemberPath = "PartyName";
+            comboBoxAvailableCharacters.ItemsSource = AppCache.Characters;
             listBoxMembers.ItemsSource = displayedMembers;
         }
 
@@ -65,18 +66,22 @@ namespace DndGUI
 
         private void btnAddMember_Click(object sender, RoutedEventArgs e)
         {
-            var name = txtMemberName.Text?.Trim();
-            var hero = AppCache.Characters.FirstOrDefault(ch => ch.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-            if (hero != null)
+            if (comboBoxAvailableCharacters.SelectedItem is Character hero)
             {
                 try
                 {
                     currentParty.AddMember(hero);
                     RefreshList();
-                    txtMemberName.Clear();
+                    comboBoxAvailableCharacters.SelectedIndex = -1;
                 }
-                catch (Exception ex) { MessageBox.Show(ex.Message); }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Proszę najpierw wybrać postać z listy.");
             }
         }
 

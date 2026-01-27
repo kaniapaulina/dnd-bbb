@@ -31,7 +31,7 @@ namespace Dnd_BBB.Core
         {
             get
             {
-                return 2 + Level;
+                return 3 + Level;
             }
         }
         //Spells Proficinties i Equipment sa przechowywane jako json co umozliwia zapis do bazy danych, same obiekty nie sa mapowane

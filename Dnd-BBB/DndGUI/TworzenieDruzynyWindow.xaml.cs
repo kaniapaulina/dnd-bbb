@@ -28,30 +28,27 @@ namespace DndGUI
         {
             InitializeComponent();
             listBoxCharacters.ItemsSource = partyMembers;
+            cmbPostaci.ItemsSource = AppCache.Characters;
             listBoxCharacters.DisplayMemberPath = "Name";
         }
 
         private void DodajButton_Click(object sender, RoutedEventArgs e)
         {
-            string name = txtNazwaPostaci.Text?.Trim();
-            if (string.IsNullOrWhiteSpace(name)) return;
-
-            var hero = AppCache.Characters.FirstOrDefault(ch => ch.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-            if (hero == null)
+            if (cmbPostaci.SelectedItem is Character hero)
             {
-                MessageBox.Show("Nie znaleziono takiej postaci w bazie.");
-                return;
-            }
+                if (partyMembers.Any(p => p.Name == hero.Name))
+                {
+                    MessageBox.Show("Ta postać jest już w Twojej drużynie.");
+                    return;
+                }
 
-            if (partyMembers.Any(p => p.Name == hero.Name))
+                partyMembers.Add(hero);
+                cmbPostaci.SelectedIndex = -1;
+            }
+            else
             {
-                MessageBox.Show("Ta postać jest już w Twojej drużynie.");
-                return;
+                MessageBox.Show("Wybierz postać z listy przed dodaniem.");
             }
-
-            partyMembers.Add(hero);
-            txtNazwaPostaci.Clear();
         }
 
         private void ZapiszDruzyny_Click(object sender, RoutedEventArgs e)

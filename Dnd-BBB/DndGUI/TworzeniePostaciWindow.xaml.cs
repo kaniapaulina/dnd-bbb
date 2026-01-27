@@ -33,11 +33,20 @@ namespace DndGUI
         public TworzeniePostaciWindow()
         {
             InitializeComponent();
-            txtKlasaPostaci.TextChanged += (s, e) => UpdateClassAndSpells();
         }
+        private void CmbKlasaPostaci_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateClassAndSpells();
+        }
+
         private void UpdateClassAndSpells()
         {
-            character.UnitClass = GetClass(txtKlasaPostaci.Text);
+            if (txtSpell1 == null || txtSpell2 == null || txtSpell3 == null || txtSpell4 == null)
+                return;
+
+            string selectedClass = (cmbKlasaPostaci.SelectedItem as ComboBoxItem)?.Content.ToString();
+
+            character.UnitClass = GetClass(selectedClass);
             bool canCast = character.UnitClass?.Spell ?? false;
 
             txtSpell1.IsEnabled = txtSpell2.IsEnabled = txtSpell3.IsEnabled = txtSpell4.IsEnabled = canCast;
@@ -93,14 +102,20 @@ namespace DndGUI
 
         private void RollButton_Click(object sender, RoutedEventArgs e)
         {
-            if (rollClicked) return; // dodatkowe zabezpieczenie
+            if (string.IsNullOrWhiteSpace(txtNazwaPostaci.Text))
+            {
+                MessageBox.Show("Wpisz imię bohatera, zanim rzucisz kośćmi!");
+                return;
+            }
+            if (rollClicked) return;
 
-            DiceRollWindow animationWindow = new DiceRollWindow();
-            animationWindow.Owner = this;
+            DiceRollWindow animationWindow = new DiceRollWindow { Owner = this };
             animationWindow.ShowDialog();
+            string selectedClass = (cmbKlasaPostaci.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string selectedRace = (cmbRasaPostaci.SelectedItem as ComboBoxItem)?.Content.ToString();
 
-            character.UnitClass = GetClass(txtKlasaPostaci.Text);
-            character.UnitRace = GetRace(txtRasaPostaci.Text);
+            character.UnitClass = GetClass(selectedClass);
+            character.UnitRace = GetRace(selectedRace);
 
             if (character.UnitClass != null && character.UnitRace != null)
             {
@@ -109,17 +124,13 @@ namespace DndGUI
                 rollClicked = true;
                 ((Button)sender).IsEnabled = false;
                 UpdateClassAndSpells();
-
             }
             else
             {
-                losStr.Text = "0";
-                losDex.Text = "0";
-                losInt.Text = "0";
-                losWis.Text = "0";
-                losChar.Text = "0";
-                losConst.Text = "0";
+                losStr.Text = losDex.Text = losInt.Text = losWis.Text = losChar.Text = losConst.Text = "0";
             }
+
+            btnZapiszPostac.IsEnabled = true;
 
         }
 

@@ -141,10 +141,13 @@
         </Border>
 
 
-        <TextBox x:Name="txtMemberName" 
+        <ComboBox x:Name="comboBoxAvailableCharacters" 
+            DisplayMemberPath="Name"
             Grid.Row="1" Grid.Column="1"
             BorderBrush="#FF89C06F"
             BorderThickness="2"
+            IsEditable="True" IsReadOnly="True" 
+            Text="Wybierz postać"
             Background="#FFDFF8D0" FontWeight="Bold" 
                  Foreground="#FF30584E" 
                  Margin="0,10,0,70" 

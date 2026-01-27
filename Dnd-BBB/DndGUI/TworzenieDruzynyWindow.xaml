@@ -45,9 +45,11 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <TextBox x:Name="txtNazwaPostaci" 
+            <ComboBox x:Name="cmbPostaci" 
                 Grid.Row="0"
-                TextWrapping="Wrap" 
+                IsEditable="True" IsReadOnly="True" 
+                Text="Wybierz postać"
+                DisplayMemberPath="Name"
                 BorderBrush="#FF89C06F"
                 BorderThickness="2"
                 Height="30"
