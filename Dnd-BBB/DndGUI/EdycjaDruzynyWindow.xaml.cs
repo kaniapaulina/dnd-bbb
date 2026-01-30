@@ -53,13 +53,14 @@ namespace DndGUI
         {
             displayedMembers.Clear();
             foreach (var m in currentParty.PartyMembers) displayedMembers.Add(m);
+
         }
 
         private void comboBoxParties_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (comboBoxParties.SelectedItem is not Party selected) return;
-
             currentParty = new Party(selected.PartyName) { PartyMembers = selected.PartyMembers.ToList() };
+            currentParty = selected;
             txtPartyName.Text = currentParty.PartyName;
             RefreshList();
         }
@@ -89,7 +90,7 @@ namespace DndGUI
         {
             if (listBoxMembers.SelectedItem is Character c)
             {
-                currentParty.DeleteMember(c.Name);
+                currentParty.PartyMembers.Remove(c);
                 RefreshList();
             }
         }
@@ -111,13 +112,23 @@ namespace DndGUI
 
         private void btnSaveChanges_Click(object sender, RoutedEventArgs e)
         {
+            if (currentParty == null) return;
+
             currentParty.PartyName = txtPartyName.Text?.Trim();
-            currentParty.SaveToDb(currentParty); // Zapis do bazy danych
+            try
+            {
+                currentParty.SaveToDb(currentParty);
 
-            var idx = AppCache.Parties.ToList().FindIndex(p => p.PartyName == currentParty.PartyName);
-            if (idx >= 0) AppCache.Parties[idx] = currentParty;
+                // Odświeżamy globalny AppCache, żeby inne okna widziały zmiany
+                var updatedParties = Party.ReadFromDb();
+                AppCache.Parties = new ObservableCollection<Party>(updatedParties);
 
-            MessageBox.Show("Zmiany w drużynie zostały zapisane.");
+                MessageBox.Show("Drużyna zapisana pomyślnie.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd zapisu: {ex.Message}");
+            }
         }
     }
 }

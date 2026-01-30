@@ -59,10 +59,11 @@ namespace DndGUI
                 return;
             }
 
-            var party = new Party(txtNazwa.Text) { PartyMembers = partyMembers.ToList() };
+            var party = new Party(txtNazwa.Text.Trim());
+            party.PartyMembers = partyMembers.ToList();
 
-            AppCache.Parties.Add(party);
-            party.SaveToDb(party); 
+            party.SaveToDb(party);
+            AppCache.Parties = new ObservableCollection<Party>(Party.ReadFromDb());
 
             AppCache.SyncAll();
             this.Close();

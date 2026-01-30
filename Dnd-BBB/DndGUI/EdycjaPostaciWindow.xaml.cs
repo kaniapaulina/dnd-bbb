@@ -102,6 +102,12 @@ namespace DndGUI
 
             try
             {
+                int debugHp = GetValueFromControl("badgeHp");
+                if (debugHp == 0)
+                {
+                    MessageBox.Show("Ostrzeżenie: Odczytano HP jako 0. Przerwanie zapisu, aby nie uszkodzić danych.");
+                    return;
+                }
                 c.Hp = GetValueFromControl("badgeHp");
                 c.Ac = GetValueFromControl("badgeAc");
                 c.Gold = GetValueFromControl("badgeGold");
@@ -109,16 +115,46 @@ namespace DndGUI
                 int targetLvl = GetValueFromControl("badgeLvl");
                 while (c.Level < targetLvl) c.LevelUp();
 
-                AppCache.SyncEditors();
-                MessageBox.Show("Zmiany zapisane w pamięci.");
+                var partyToSave = c.Party;
+                if (c.Party != null)
+                {
+                    AppCache.SyncEditors();
+                    partyToSave.SaveToDb(partyToSave);
+                    MessageBox.Show("Zmiany zapisane pomyślnie!");
+                }
+                else
+                {
+                    MessageBox.Show("Błąd: Nie znaleziono przypisanej drużyny!");
+                }
             }
             catch (Exception ex) { MessageBox.Show($"Błąd: {ex.Message}"); }
         }
         private int GetValueFromControl(string name)
         {
             var ctrl = this.FindName(name);
-            string val = (ctrl is ContentControl cc) ? cc.Content?.ToString() : (ctrl is TextBox tb) ? tb.Text : "0";
-            return int.TryParse(val, out int res) ? res : 0;
+            if (ctrl == null) return 0;
+
+            if (ctrl is HandyControl.Controls.Badge badge)
+            {
+                try
+                {
+                    return Convert.ToInt32(badge.Value);
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+            if (ctrl is TextBox tb)
+            {
+                return int.TryParse(tb.Text, out int res) ? res : 0;
+            }
+            if (ctrl is ContentControl cc)
+            {
+                string contentStr = cc.Content?.ToString() ?? "0";
+                return int.TryParse(contentStr, out int res) ? res : 0;
+            }
+            return 0;
         }
 
         private void AddSpell_Click(object sender, RoutedEventArgs e) => AddToList("txtNewSpell", "listViewSpells", (c, v) => c.AddSpell(v));

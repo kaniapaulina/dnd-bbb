@@ -30,57 +30,86 @@ namespace Dnd_BBB.Core
         public string PartyName { get; set; }
         public virtual List<Character> PartyMembers { get; set; } = new();
 
+        private void PrepareCharacterForSave(Character c)
+        {
+            var options = new JsonSerializerOptions
+            { 
+             ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles
+            };
+
+            c.SpellsJson = JsonSerializer.Serialize(c.Spells ?? new List<string>(), options);
+            c.ProficienciesJson = JsonSerializer.Serialize(c.Proficiencies ?? new List<string>(), options);
+            c.EquipmentJson = JsonSerializer.Serialize(c.Equipment ?? new List<string>(), options);
+
+            if (!string.IsNullOrWhiteSpace(c.Name))
+            {
+                c.Name = c.Name.Trim();
+            }
+        }
+
         public void SaveToDb(Party party)
         {
             try
             {
                 using (var db = new PartyDbContext())
                 {
-                    foreach (var c in party.PartyMembers)
-                    {
-                        c.SpellsJson = JsonSerializer.Serialize(c.Spells ?? new List<string>());
-                        c.ProficienciesJson = JsonSerializer.Serialize(c.Proficiencies ?? new List<string>());
-                        c.EquipmentJson = JsonSerializer.Serialize(c.Equipment ?? new List<string>());
-                        c.Party = party;
-                    }
-                Party existingParty = null;
-                    if (party.PartyId != 0)
-                        existingParty = db.Parties.Include(p => p.PartyMembers).FirstOrDefault(p => p.PartyId == party.PartyId);
-                    else
-                        existingParty = db.Parties.Include(p => p.PartyMembers).FirstOrDefault(p => p.PartyName == party.PartyName);
+                    var existingParty = db.Parties
+                        .Include(p => p.PartyMembers)
+                        .FirstOrDefault(p => (party.PartyId != 0 && p.PartyId == party.PartyId) || p.PartyName == party.PartyName);
 
                     if (existingParty == null)
-                {
-                    // nowy party 
-                    db.Parties.Add(party);
-                }
-                else
-                {
-                        // aktualizuj party
+                    {
+                        foreach (var c in party.PartyMembers)
+                        {
+                            PrepareCharacterForSave(c);
+                            if (c.CharacterId != 0) db.Characters.Attach(c);
+                        }
+                        db.Parties.Add(party);
+                    }
+                    else
+                    {
                         existingParty.PartyName = party.PartyName;
-                        db.Entry(existingParty).State = System.Data.Entity.EntityState.Modified;
+                        var incomingMembers = party.PartyMembers.ToList();
+                        var incomingIds = party.PartyMembers.Select(m => m.CharacterId).ToList();
+                        var membersToRemove = existingParty.PartyMembers
+                            .Where(em => em.CharacterId != 0 && !incomingIds.Contains(em.CharacterId))
+                            .ToList();
 
-                        foreach (var newChar in party.PartyMembers)
+                        foreach (var toRemove in membersToRemove)
                         {
-                        var match = existingParty.PartyMembers.FirstOrDefault(ec => ec.Name == newChar.Name);
-                        if (match == null)
+                            existingParty.PartyMembers.Remove(toRemove);
+                        }
+                        existingParty.PartyMembers.Clear();
+
+                        foreach (var incomingChar in incomingMembers)
                         {
-                                // nowa postać
-                                newChar.PartyId = existingParty.PartyId;
-                                newChar.Party = existingParty;
-                                db.Characters.Add(newChar);
+                            PrepareCharacterForSave(incomingChar);
+
+                            var dbChar = db.Characters.FirstOrDefault(c =>
+                                (incomingChar.CharacterId != 0 && c.CharacterId == incomingChar.CharacterId) ||
+                                c.Name == incomingChar.Name);
+
+                            if (dbChar != null)
+                            {
+                                var originalId = dbChar.CharacterId;
+                                db.Entry(dbChar).CurrentValues.SetValues(incomingChar);
+                                dbChar.CharacterId = originalId;
+                                dbChar.Level = incomingChar.Level;
+                                dbChar.Gold = incomingChar.Gold;
+                                dbChar.Ac = incomingChar.Ac;
+                                dbChar.SpellsJson = incomingChar.SpellsJson;
+                                dbChar.ProficienciesJson = incomingChar.ProficienciesJson;
+                                dbChar.EquipmentJson = incomingChar.EquipmentJson;
+
+                                existingParty.PartyMembers.Add(dbChar);
                             }
-                        else
-                        {
-                            // istniejąca
-                            match.Hp = newChar.Hp;
-                            match.SpellsJson = newChar.SpellsJson;
-                            match.ProficienciesJson = newChar.ProficienciesJson;
-                            match.EquipmentJson = newChar.EquipmentJson;
-                            db.Entry(match).State = System.Data.Entity.EntityState.Modified;
+                            else
+                            {
+                                existingParty.PartyMembers.Add(incomingChar);
+                            }
                         }
                     }
-                }
+
                     db.SaveChanges();
                 }
             }
@@ -96,8 +125,9 @@ namespace Dnd_BBB.Core
         {
             using (var db = new PartyDbContext())
             {
-                var parties = db.Parties.Include("PartyMembers").ToList();
-
+                var parties = db.Parties
+                        .Include(p => p.PartyMembers)
+                        .ToList();
                 foreach (var p in parties)
                 {
                     foreach (var c in p.PartyMembers)

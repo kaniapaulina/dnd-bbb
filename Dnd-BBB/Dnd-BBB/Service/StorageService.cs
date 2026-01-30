@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Dnd_BBB.Service
@@ -19,7 +20,11 @@ namespace Dnd_BBB.Service
     {
         public static void SavePartyJSON(string nazwa, Party p)
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                ReferenceHandler = ReferenceHandler.IgnoreCycles
+            };
             string jsonString = JsonSerializer.Serialize(p, options);
             File.WriteAllText(nazwa, jsonString);
         }
