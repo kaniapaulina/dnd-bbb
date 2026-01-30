@@ -18,7 +18,7 @@ Nasza aplikacja WPF została stworzona do zarządzania postaciami i drużynami w
 ## Wymagania
 - Zainstalowany .NET SDK 8.
 - Zalecane: Visual Studio 2022 z obsługą .NET desktop development.
-- (Opcjonalnie) SQL Server / LocalDB / SQL Express.
+- SQL Server / LocalDB / SQL Express.
 
 ## Setup
 1. Sklonuj repozytorium i otwórz rozwiązanie w Visual Studio 2022.
