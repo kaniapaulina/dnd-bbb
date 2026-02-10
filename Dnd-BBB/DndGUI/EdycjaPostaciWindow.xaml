@@ -173,6 +173,7 @@
             BorderThickness="2"
             Foreground="#FF316956" BorderBrush="#FF316956"/>
         <TextBox x:Name="txtDextBonus" Grid.Column="1" 
+                 IsReadOnly="True"
             HorizontalAlignment="Left" Height="41" 
             Margin="10,20,0,0" TextWrapping="Wrap" 
             Text="+2" VerticalAlignment="Top" 
@@ -203,7 +204,8 @@
             Content="CONST"/>
         <TextBox x:Name="txtConsBonus" Grid.Column="1" 
             HorizontalAlignment="Left" Height="41" 
-            Margin="116,20,0,0" TextWrapping="Wrap" 
+            Margin="116,20,0,0" TextWrapping="Wrap"
+                 IsReadOnly="True"
             Text="+2" VerticalAlignment="Top" 
             Width="40" 
             FontSize="18" Grid.Row="2"
@@ -231,6 +233,7 @@
               Foreground="#FF316956" BorderBrush="#FF316956"
             Content="CHAR"/>
         <TextBox x:Name="txtCharBonus" Grid.Column="1" 
+                 IsReadOnly="True"
             HorizontalAlignment="Left" Height="41" 
             Margin="10,102,0,0" TextWrapping="Wrap" 
             Text="+2" VerticalAlignment="Top" 
@@ -260,6 +263,7 @@
             Content="STR"/>
 
         <TextBox x:Name="txtStrBonus" Grid.Column="1" 
+                 IsReadOnly="True"
             HorizontalAlignment="Left" Height="41" 
             Margin="116,102,0,0" TextWrapping="Wrap" 
             Text="+2" VerticalAlignment="Top" 
@@ -290,6 +294,7 @@
         <TextBox x:Name="txtWisBonus" Grid.Column="1" 
             HorizontalAlignment="Left" Height="41" 
             Margin="10,184,0,0" TextWrapping="Wrap" 
+                 IsReadOnly="True"
             Text="+2" VerticalAlignment="Top" 
             Width="40" 
             FontSize="18" Grid.Row="2"
@@ -300,7 +305,7 @@
         <Label x:Name="lblWisValue" Height="41" Width="40" Grid.Row="2" 
             Grid.Column="1" HorizontalAlignment="Left" 
             Margin="50,184,0,0" 
-            VerticalAlignment="Top"
+            VerticalAlignment="Top"     
             Content="17"        Background="#FF89C06F"
          FontSize="14" FontWeight="Bold" 
         BorderThickness="2"
@@ -317,6 +322,7 @@
             Content="INT"/>
         <TextBox x:Name="txtIntBonus" Grid.Column="1" 
             HorizontalAlignment="Left" Height="41" 
+                 IsReadOnly="True"
             Margin="116,184,0,0" TextWrapping="Wrap" 
             Text="+2" VerticalAlignment="Top" 
             Width="40" 

@@ -210,6 +210,7 @@
 
             <hc:TextBox Grid.Column="2" 
                         x:Name="losDex"
+                        IsReadOnly="True"
                         HorizontalAlignment="Left" 
                         Height="36" Margin="138,5,0,0" 
                         Foreground="#FFDFF8D0" 
@@ -222,6 +223,7 @@
 
             <hc:TextBox Grid.Column="2" 
                 x:Name="losConst"
+                        IsReadOnly="True"
                 HorizontalAlignment="Left" 
                 Height="36" Margin="138,41,0,0" 
                 Grid.Row="5" TextWrapping="Wrap" 
@@ -234,6 +236,7 @@
 
             <hc:TextBox Grid.Column="2" 
                 x:Name="losStr"
+                        IsReadOnly="True"
                 HorizontalAlignment="Left" 
                 Height="36" Margin="138,76,0,0"
                 Foreground="#FFDFF8D0" 
@@ -245,6 +248,7 @@
                 Width="44"/>
 
             <hc:TextBox Grid.Column="2" 
+                IsReadOnly="True"
                 x:Name="losInt"
                 HorizontalAlignment="Left" 
                 Foreground="#FFDFF8D0" 
@@ -254,10 +258,11 @@
                 Height="36" Margin="138,7,0,0" 
                 Grid.Row="4" TextWrapping="Wrap" 
                 Text="0" VerticalAlignment="Top" 
-                Width="44"/>
+                Width="44" TextChanged="losInt_TextChanged"/>
 
             <hc:TextBox Grid.Column="2" 
                 x:Name="losChar"
+                        IsReadOnly="True"
                 HorizontalAlignment="Left" 
                 Height="36" Margin="138,43,0,0" 
                 Grid.Row="4" TextWrapping="Wrap"
@@ -266,11 +271,12 @@
                 BorderThickness="2"
                 Background="#FF89C06F"
                 Text="0" VerticalAlignment="Top" 
-                Width="44"/>
+                Width="44" TextChanged="losChar_TextChanged"/>
 
             <hc:TextBox Grid.Column="2" 
                 HorizontalAlignment="Left" 
                x:Name="losWis"
+                        IsReadOnly="True"
                 Height="36" Margin="138,79,0,0" 
                 Grid.Row="4" TextWrapping="Wrap"
                 Foreground="#FFDFF8D0" 

@@ -181,5 +181,15 @@ namespace DndGUI
 
             this.Close();
         }
+
+        private void losInt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void losChar_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }
